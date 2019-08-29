@@ -171,7 +171,7 @@ for URL in $URLS; do
         options+=(-D "${LOG_DIRECTORY}/${LOG}_${i}")
       fi
 
-      request=$(eval $(curl "${options[@]}" "$URL"))
+      request=$(eval $(curl -k "${options[@]}" "$URL"))
       ttfbs+=($(echo $request | grep -oE "TTFB: .{0,7}" | cut -d' ' -f2 | sort -n));
       if [ $VERBOSE -eq 1 ]; then
         echo "$request" >&2
@@ -196,10 +196,9 @@ for URL in $URLS; do
     printf "${SHOW_URL}\e[32mfastest \e[39m${ttfbs[0]} \e[91mslowest \e[39m${ttfbs[${#ttfbs[*]}-1]} \e[95mmedian \e[39m$(median ${ttfbs[*]})\e[39m\n";
   else
    if [ $VERBOSE -eq 1 ]; then
-     echo "${options[@]}"
      echo -e $SHOW_URL $(eval $(curl -k "${options[@]}" "$URL"))
    else
-     echo -e $SHOW_URL $(eval $(curl "${options[@]}" "$URL") | grep -oE "TTFB: .{0,7}" | cut -d' ' -f2)
+     echo -e $SHOW_URL $(eval $(curl -k "${options[@]}" "$URL") | grep -oE "TTFB: .{0,7}" | cut -d' ' -f2)
    fi
   fi
 done | column -s'|' -t
